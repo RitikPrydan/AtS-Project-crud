@@ -1,13 +1,13 @@
 const joi = require('@hapi/joi');
 
 const UserValidation = joi.object({
-    profile : joi.string(),
-    firstName : joi.string(),
-    lastName : joi.string(),
-    email :joi.string().email(),
-    password : joi.string(),
-    mobile : joi.string(),
-    address : joi.string(),
+    profile : joi.string().required(),
+    firstName : joi.string().required(),
+    lastName : joi.string().required(),
+    email :joi.string().email().required(),
+    password : joi.string().required(),
+    mobile : joi.string().required(),
+    address : joi.string().required(),
 });
 
 module.exports = { UserValidation };
