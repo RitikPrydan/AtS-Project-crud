@@ -8,7 +8,7 @@ const addUser = async (req,res,next) => {
         var img = 'http://localhost:4000/user/src/img/profile'+req.file.filename;
         const validateUser = await UserValidation.validateAsync(req.body);
         const createUser = new User({
-            profile : validateUser.profile,
+            profile :img ,
             firstName : validateUser.firstName,
             lastName : validateUser.lastName,
             email : validateUser.email,
@@ -48,12 +48,36 @@ const getSingleUser = async (req,res,next) => {
 
 const updateUser = async (req,res,next) => {
     try {
+        // var img = 'http://localhost:4000/user/src/img/profile'+req.file.filename;
+        const validateUser = await UserValidation.validateAsync(req.body);
         const id = req.params.id;
+        let img
+        if(req.file){
+             img = 'http://localhost:4000/user/src/img/profile'+req.file.filename;
+        }else{
+            const existingUser = await User.findById(id);
+            img = existingUser.profile;
+        }
         const editUser = await User.findByIdAndUpdate(
             id,
-            req.body,
+            {
+                $set : {
+                    profile :img,
+                    firstName : validateUser.firstName,
+                    lastName : validateUser.lastName,
+                    email : validateUser.email,
+                    password : validateUser.password,
+                    mobile : validateUser.mobile,
+                    address : validateUser.address
+                },
+            },
             { new : true })
-            res.send(editUser);
+            //editUser["profile"] =  `http://localhost:4000/user/src/img/profile/${editUser.profile}`;
+            if(editUser){
+                res.json({editUser,message : "User Data successfully updated"});
+            }else{
+                res.json({message : "user is not found"})
+            }
             console.log(updateUser);
     } catch (error) {
         res.status(404).send(error);
@@ -67,7 +91,7 @@ const deleteUser = async (req,res,next) => {
         if(!req.params.id){
             return res.status(400).send();
         }
-        res.send(removeUser)
+        res.json({removeUser,message:"user is not found"})
     } catch (error) {
         res.status(500).send(error);
     }
